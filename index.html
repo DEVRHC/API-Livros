@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biblioteca</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f6f6f6;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 8px;
+      margin: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 8px 12px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background-color: white;
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>📚 Biblioteca</h1>
+
+  <form id="formLivro">
+    <input type="number" id="id" placeholder="ID" required />
+    <input type="text" id="titulo" placeholder="Título" required />
+    <input type="text" id="autor" placeholder="Autor" required />
+    <button type="submit">Adicionar Livro</button>
+  </form>
+
+  <h2>Livros cadastrados:</h2>
+  <ul id="listaLivros"></ul>
+
+  <script>
+    const form = document.getElementById('formLivro');
+    const lista = document.getElementById('listaLivros');
+
+    // Carrega livros da API ao abrir a página
+    async function carregarLivros() {
+      const response = await fetch('http://127.0.0.1:5000/livros');
+      const livros = await response.json();
+
+      lista.innerHTML = '';
+      livros.forEach(livro => {
+        const item = document.createElement('li');
+        item.textContent = `${livro.id} - ${livro.titulo} (por ${livro.autor})`;
+        lista.appendChild(item);
+      });
+    }
+
+    // Adiciona novo livro via POST
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('id').value;
+      const titulo = document.getElementById('titulo').value;
+      const autor = document.getElementById('autor').value;
+
+      await fetch('http://127.0.0.1:5000/livros', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ id: Number(id), titulo, autor })
+      });
+
+      form.reset();
+      carregarLivros();
+    });
+
+    carregarLivros();
+  </script>
+</body>
+</html>
