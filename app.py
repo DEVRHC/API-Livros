@@ -1,61 +1,68 @@
-from flask import Flask, jsonify, request
-
-app = Flask(__name__)
-
+from flask import Flask, jsonify, request, render_template
+from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
-# Base de dados simulada (em memória)
-livros = [
-    {"id": 1, "titulo": "1984", "autor": "George Orwell"},
-    {"id": 2, "titulo": "Dom Casmurro", "autor": "Machado de Assis"}
-]
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///livros.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Rota principal
+db = SQLAlchemy(app)
+
+class Livro(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(100), nullable=False)
+    autor = db.Column(db.String(100), nullable=False)
+
+def inicializar_banco():
+    with app.app_context():
+        db.create_all()
+
 @app.route('/')
 def home():
-    return "API de Livros - Bem-vindo!"
+    return render_template('index.html')
 
-# Listar todos os livros
 @app.route('/livros', methods=['GET'])
-def get_livros():
-    return jsonify(livros)
+def listar_livros():
+    livros = Livro.query.all()
+    return jsonify([{"id": l.id, "titulo": l.titulo, "autor": l.autor} for l in livros])
 
-# Buscar livro por ID
 @app.route('/livros/<int:id>', methods=['GET'])
-def get_livro(id):
-    for livro in livros:
-        if livro["id"] == id:
-            return jsonify(livro)
-    return jsonify({"erro": "Livro não encontrado"}), 404
+def buscar_livro(id):
+    livro = db.session.get(Livro, id)
+    if not livro:
+        return jsonify({"erro": "Livro não encontrado"}), 404
+    return jsonify({"id": livro.id, "titulo": livro.titulo, "autor": livro.autor})
 
-# Adicionar um novo livro
 @app.route('/livros', methods=['POST'])
 def adicionar_livro():
-    novo_livro = request.get_json()
-    livros.append(novo_livro)
-    return jsonify(novo_livro), 201
+    data = request.get_json()
+    novo = Livro(id=data['id'], titulo=data['titulo'], autor=data['autor'])
+    db.session.add(novo)
+    db.session.commit()
+    return jsonify({"id": novo.id, "titulo": novo.titulo, "autor": novo.autor}), 201
 
-# Atualizar um livro
 @app.route('/livros/<int:id>', methods=['PUT'])
 def atualizar_livro(id):
-    for livro in livros:
-        if livro["id"] == id:
-            dados = request.get_json()
-            livro.update(dados)
-            return jsonify(livro)
-    return jsonify({"erro": "Livro não encontrado"}), 404
+    data = request.get_json()
+    livro = db.session.get(Livro, id)
+    if not livro:
+        return jsonify({"erro": "Livro não encontrado"}), 404
+    livro.titulo = data['titulo']
+    livro.autor = data['autor']
+    db.session.commit()
+    return jsonify({"id": livro.id, "titulo": livro.titulo, "autor": livro.autor})
 
-# Deletar um livro
 @app.route('/livros/<int:id>', methods=['DELETE'])
 def deletar_livro(id):
-    for i, livro in enumerate(livros):
-        if livro["id"] == id:
-            del livros[i]
-            return jsonify({"mensagem": "Livro deletado com sucesso!"})
-    return jsonify({"erro": "Livro não encontrado"}), 404
+    livro = db.session.get(Livro, id)
+    if not livro:
+        return jsonify({"erro": "Livro não encontrado"}), 404
+    db.session.delete(livro)
+    db.session.commit()
+    return jsonify({"mensagem": "Livro deletado com sucesso!"})
 
 if __name__ == '__main__':
+    inicializar_banco()
     app.run(debug=True)

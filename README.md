@@ -1,59 +1,76 @@
-<h1>📚 API de Livros — Simples, RESTful e em Flask</h1>
-<h2>✅ Funcionalidades:</h2>
+# 📚 API de Livros — Flask + SQLite
 
-✅ Listar todos os livros
+Uma API simples de gerenciamento de livros usando **Flask** com persistência em **SQLite** e um front-end integrado via HTML.
 
-✅ Buscar livro por ID
+---
 
-✅ Adicionar novo livro
+## ✅ Funcionalidades
 
-✅ Atualizar livro
+- [x] Listar todos os livros
+- [x] Buscar livro por ID
+- [x] Adicionar novo livro
+- [x] Atualizar livro existente
+- [x] Deletar livro
+- [x] Banco de dados persistente com SQLite
+- [x] Front-end incluído e servido via Flask (`/templates/index.html`)
 
-✅ Deletar livro
-  
+---
 
-<h1>📦 Requisitos:</h1>
-<h2>Você vai precisar do Flask. Instale com:</h2>
+## 📦 Requisitos
 
-_pip install flask_
+Instale os pacotes necessários com:
 
+```bash
+pip install -r requirements.txt
+```
 
-<h1>▶️ Como rodar:</h1>
-<h2>Salve o código em um arquivo, por exemplo app.py, e execute:</h2>
+---
 
-_python app.py_
+## ▶️ Como rodar
 
-- A API ficará disponível em:
+```bash
+python app.py
+```
+
+A aplicação será executada em:
+
 📍 http://127.0.0.1:5000/
 
+---
 
-<h1>Front-end simples em HTML + CSS3 que consome sua API de livros em Flask. Ele será capaz de:</h1>
+## 🧠 Tecnologias utilizadas
 
-✅ Listar livros
-✅ Adicionar um novo livro
+- Flask
+- Flask-CORS
+- Flask-SQLAlchemy
+- SQLite
+- HTML + CSS + JS vanilla
 
+---
 
-<h1>🧩 Como funciona a integração:</h1>
+## 🧩 Estrutura do Projeto
 
-- O front-end envia requisições GET e POST para os endpoints da API (/livros), usando JavaScript com fetch().
-- Código do Front-End (HTML + CSS + JS)
+```
+biblioteca_api/
+├── app.py
+├── requirements.txt
+├── templates/
+│   └── index.html
+└── livros.db (gerado automaticamente)
+```
 
+---
 
-<h1>🚀 Como usar:</h1>
-<h2>Execute sua API Flask:</h2>
+## 🔐 CORS
 
-_python app.py_
+O projeto já vem com CORS habilitado para permitir requisições do front-end.
 
-- Abra o index.html no navegador (basta dar dois cliques ou abrir via VSCode com Live Server)
+---
 
+## 🚀 Melhorias futuras sugeridas
 
-<h1>🔐 Importante: CORS</h1>
-<h2>Como o front-end está sendo servido separadamente da API, você pode precisar ativar o CORS no Flask. Basta instalar o pacote:</h2>
-
-_pip install flask-cors_
-
-<h1>🧪 Teste completo:</h1>
-
-- Rode sua API com python app.py
-- Abra index.html no navegador
-- Adicione, edite e delete livros com facilidade!
+- 🔒 Autenticação com JWT
+- ✅ Validação de dados com `marshmallow`
+- 📁 Separação em módulos (`routes`, `models`, `services`)
+- 🧪 Testes com `pytest`
+- 📦 Dockerização para facilitar o deploy
