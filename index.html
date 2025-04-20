@@ -28,11 +28,20 @@
 
     button {
       padding: 8px 12px;
+      margin-left: 5px;
       background-color: #4caf50;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+    }
+
+    button.deletar {
+      background-color: #e74c3c;
+    }
+
+    button.editar {
+      background-color: #f39c12;
     }
 
     ul {
@@ -56,7 +65,7 @@
     <input type="number" id="id" placeholder="ID" required />
     <input type="text" id="titulo" placeholder="Título" required />
     <input type="text" id="autor" placeholder="Autor" required />
-    <button type="submit">Adicionar Livro</button>
+    <button type="submit">Salvar</button>
   </form>
 
   <h2>Livros cadastrados:</h2>
@@ -66,7 +75,9 @@
     const form = document.getElementById('formLivro');
     const lista = document.getElementById('listaLivros');
 
-    // Carrega livros da API ao abrir a página
+    let editando = false;
+    let idEditando = null;
+
     async function carregarLivros() {
       const response = await fetch('http://127.0.0.1:5000/livros');
       const livros = await response.json();
@@ -74,23 +85,56 @@
       lista.innerHTML = '';
       livros.forEach(livro => {
         const item = document.createElement('li');
-        item.textContent = `${livro.id} - ${livro.titulo} (por ${livro.autor})`;
+        item.innerHTML = `
+          <strong>${livro.id}</strong> - ${livro.titulo} (por ${livro.autor})
+          <button class="editar" onclick="editarLivro(${livro.id}, '${livro.titulo}', '${livro.autor}')">Editar</button>
+          <button class="deletar" onclick="deletarLivro(${livro.id})">Deletar</button>
+        `;
         lista.appendChild(item);
       });
     }
 
-    // Adiciona novo livro via POST
+    // Editar livro (preenche o formulário)
+    function editarLivro(id, titulo, autor) {
+      document.getElementById('id').value = id;
+      document.getElementById('titulo').value = titulo;
+      document.getElementById('autor').value = autor;
+      editando = true;
+      idEditando = id;
+    }
+
+    // Deletar livro
+    async function deletarLivro(id) {
+      await fetch(`http://127.0.0.1:5000/livros/${id}`, {
+        method: 'DELETE'
+      });
+      carregarLivros();
+    }
+
+    // Adicionar ou atualizar livro
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const id = document.getElementById('id').value;
+      const id = Number(document.getElementById('id').value);
       const titulo = document.getElementById('titulo').value;
       const autor = document.getElementById('autor').value;
 
-      await fetch('http://127.0.0.1:5000/livros', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ id: Number(id), titulo, autor })
-      });
+      const livro = { id, titulo, autor };
+
+      if (editando) {
+        await fetch(`http://127.0.0.1:5000/livros/${idEditando}`, {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(livro)
+        });
+        editando = false;
+        idEditando = null;
+      } else {
+        await fetch('http://127.0.0.1:5000/livros', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(livro)
+        });
+      }
 
       form.reset();
       carregarLivros();
