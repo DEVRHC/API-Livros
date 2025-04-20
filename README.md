@@ -15,15 +15,15 @@
 <h1>📦 Requisitos:</h1>
 <h2>Você vai precisar do Flask. Instale com:</h2>
 
-pip install flask
+_pip install flask_
 
 
 <h1>▶️ Como rodar:</h1>
 <h2>Salve o código em um arquivo, por exemplo app.py, e execute:</h2>
 
-python app.py
+_python app.py_
 
-A API ficará disponível em:
+- A API ficará disponível em:
 📍 http://127.0.0.1:5000/
 
 
@@ -34,6 +34,7 @@ A API ficará disponível em:
 
 
 <h1>🧩 Como funciona a integração:</h1>
+
 - O front-end envia requisições GET e POST para os endpoints da API (/livros), usando JavaScript com fetch().
 - Código do Front-End (HTML + CSS + JS)
 
@@ -41,7 +42,7 @@ A API ficará disponível em:
 <h1>🚀 Como usar:</h1>
 <h2>Execute sua API Flask:</h2>
 
-python app.py
+_python app.py_
 
 - Abra o index.html no navegador (basta dar dois cliques ou abrir via VSCode com Live Server)
 
@@ -49,7 +50,7 @@ python app.py
 <h1>🔐 Importante: CORS</h1>
 <h2>Como o front-end está sendo servido separadamente da API, você pode precisar ativar o CORS no Flask. Basta instalar o pacote:</h2>
 
-pip install flask-cors
+_pip install flask-cors_
 
 <h1>🧪 Teste completo:</h1>
 
