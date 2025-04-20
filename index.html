@@ -68,6 +68,15 @@
     <button type="submit">Salvar</button>
   </form>
 
+  <h2>🔍 Buscar Livro por ID</h2>
+  <form id="formBusca">
+    <input type="number" id="buscaId" placeholder="Digite o ID do livro" required />
+    <button type="submit">Buscar</button>
+  </form>
+  
+  <div id="resultadoBusca"></div>
+  
+
   <h2>Livros cadastrados:</h2>
   <ul id="listaLivros"></ul>
 
@@ -81,6 +90,8 @@
     async function carregarLivros() {
       const response = await fetch('http://127.0.0.1:5000/livros');
       const livros = await response.json();
+
+      
 
       lista.innerHTML = '';
       livros.forEach(livro => {
@@ -141,6 +152,27 @@
     });
 
     carregarLivros();
+    const formBusca = document.getElementById('formBusca');
+  const resultadoBusca = document.getElementById('resultadoBusca');
+
+  formBusca.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('buscaId').value;
+
+    const res = await fetch(`http://127.0.0.1:5000/livros/${id}`);
+
+    if (res.status === 404) {
+      resultadoBusca.innerHTML = `<p style="color: red;">Livro não encontrado.</p>`;
+    } else {
+      const livro = await res.json();
+      resultadoBusca.innerHTML = `
+        <p><strong>ID:</strong> ${livro.id}</p>
+        <p><strong>Título:</strong> ${livro.titulo}</p>
+        <p><strong>Autor:</strong> ${livro.autor}</p>
+      `;
+    }
+  });
+  
   </script>
 </body>
 </html>
